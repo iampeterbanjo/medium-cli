@@ -15,7 +15,6 @@ import (
 )
 
 type Configuration struct {
-	Username string
 	Token string
 }
 
