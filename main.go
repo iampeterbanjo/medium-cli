@@ -8,6 +8,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/codegangsta/cli"
+	"github.com/docopt/docopt-go"
 	"github.com/mitchellh/go-homedir"
 	"github.com/russross/blackfriday"
 
