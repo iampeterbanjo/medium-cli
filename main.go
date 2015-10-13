@@ -40,6 +40,10 @@ func main() {
 			Usage: "Status of the post",
 		},
 		cli.StringFlag {
+			Name: "title, t",
+			Usage: "Post tile",
+		},
+		cli.StringFlag {
 			Name: "markdown, m",
 			Usage: "Markdown file to post to Medium",
 		},
@@ -47,6 +51,7 @@ func main() {
 
 	app.Action = func(c *cli.Context) {
 		status := c.String("status")
+		title := c.String("title")
 		markdownFile := c.String("markdown")
 
 		// check post status
@@ -57,6 +62,11 @@ func main() {
 
 		if markdownFile == "" {
 			println("Please specify a markdown file")
+			return
+		}
+
+		if title == "" {
+			println("Please specify a title")
 			return
 		}
 
@@ -88,7 +98,7 @@ func main() {
 
 		post, err := mediumClient.CreatePost(medium.CreatePostOptions{
 			UserID: 				mediumUser.ID,
-			Title:					"Title",
+			Title:					title,
 			Content:				markdown,
 			ContentFormat:	medium.ContentFormatHTML,
 			PublishStatus:	medium.PublishStatusDraft,
