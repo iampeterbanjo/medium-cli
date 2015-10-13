@@ -4,11 +4,14 @@ import (
 	"os"
 	"fmt"
 	"io/ioutil"
+	"log"
 
 	"github.com/BurntSushi/toml"
 	"github.com/codegangsta/cli"
 	"github.com/mitchellh/go-homedir"
 	"github.com/russross/blackfriday"
+
+	medium "github.com/Medium/medium-sdk-go"
 )
 
 type Configuration struct {
@@ -52,13 +55,18 @@ func main() {
 			return
 		}
 
+		if markdownFile == "" {
+			println("Please specify a markdown file")
+			return
+		}
+
 		// get post as markdown file
 		data, err := ioutil.ReadFile(markdownFile);
 		check(err)
 
-		markdown := blackfriday.MarkdownCommon([]byte(data))
+		markdown := string(blackfriday.MarkdownCommon([]byte(data)))
 
-		fmt.Println("Markdown: " + string(markdown))
+		fmt.Println("Markdown: " + markdown)
 
 		dir, err := homedir.Dir()
 		check(err)
@@ -72,6 +80,23 @@ func main() {
 
 		println(status + " something")
 		fmt.Println("Found token: " + config.Token)
+
+		mediumClient := medium.NewClientWithAccessToken(config.Token)
+
+		mediumUser, err := mediumClient.GetUser()
+		check(err)
+
+		post, err := mediumClient.CreatePost(medium.CreatePostOptions{
+			UserID: 				mediumUser.ID,
+			Title:					"Title",
+			Content:				markdown,
+			ContentFormat:	medium.ContentFormatHTML,
+			PublishStatus:	medium.PublishStatusDraft,
+		})
+
+		check(err)
+
+		log.Println(mediumUser, post)
 	}
 
 	app.Run(os.Args)
